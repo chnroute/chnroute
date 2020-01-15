@@ -1,0 +1,31 @@
+dist: bionic
+sudo: false
+env:
+    global:
+        - DATE_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+        - DESTDIR=dist
+notifications:
+    email: false
+
+script:
+    - rm -rf $DESTDIR
+    - mkdir -p $DESTDIR
+    - wget http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest -O $DESTDIR/delegated-apnic-latest
+    - awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' < $DESTDIR/delegated-apnic-latest >$DESTDIR/chnroute.txt
+    - awk -F\| '/CN\|ipv6/ { printf("%s/%d\n", $4, $5) }' < $DESTDIR/delegated-apnic-latest >$DESTDIR/chnroute6.txt
+    - rm -f $DESTDIR/delegated-apnic-latest
+    - echo "# Generated on $DATE_TIME" >$DESTDIR/index.md
+    - echo '## [chnroute.txt](chnroute.txt)' >>$DESTDIR/index.md
+    - echo '## [chnroute6.txt](chnroute6.txt)' >>$DESTDIR/index.md
+
+deploy:
+    provider: pages
+    github_token: $GITHUB_TOKEN
+    local_dir: $DESTDIR
+    keep_history: true
+    edge: true
+    skip_cleanup: true
+    committer_from_gh: true
+    commit_message: "Generated on $DATE_TIME"
+    on:
+        branch: master
