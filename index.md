@@ -1,4 +1,4 @@
-# Generated on 2020-12-20 07:46:11
+# Generated on 2020-12-21 07:46:55
 ## [chnroute.txt](chnroute.txt)
 ## [chnroute6.txt](chnroute6.txt)
 ## [chnroute-min.txt](chnroute-min.txt)
